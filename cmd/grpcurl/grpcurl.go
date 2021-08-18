@@ -671,8 +671,17 @@ func main() {
 			cc = dial()
 		}
 		var in io.Reader
-		if *data == "@" {
-			in = os.Stdin
+		if strings.HasPrefix(*data, "@") {
+			if *data == "@" {
+				in = os.Stdin
+			} else {
+				filename := strings.Replace(*data, "@", "", 1)
+				filePtr, err := os.Open(filename)
+				if err != nil {
+					fail(err, "Failed to open file %s", filename)
+				}
+				in = filePtr
+			}
 		} else {
 			in = strings.NewReader(*data)
 		}
